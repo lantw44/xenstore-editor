@@ -1,0 +1,7 @@
+* 2012-06-11 lantw44 <lantw44@www.tfcis.org> - 1.1
+- 修改數值的畫面加入「檔案瀏覽器」功能
+- 如果項目的值是 XenStore 路徑，那麼在 Chdir 選單中會出現 UseValue 項目，允許使
+  用者直接切換到該路徑
+
+* 2012-06-08 lantw44 <lantw44@www.tfcis.org> - 1.0
+- 最初版本

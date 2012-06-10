@@ -1,7 +1,7 @@
 #!/bin/bash
 ### Name: Simple XenStore Editor
-### Version: 1.0
-### Release Date: 2012-06-08
+### Version: 1.1
+### Release Date: 2012-06-11
 
 [ "`id -u`" != "0" ] && echo "This script should be run as root." && exit 40
 
@@ -16,16 +16,53 @@ first_run=1
 setdefault=0
 prevdir="$current"
 tmpfile=`mktemp`
-scripttitle="               Simple XenStore Editor               "
+scripttitle="               Simple XenStore Editor Version 1.1              "
 scriptshorttitle="Simple XenStore Editor"
 
-function getxenfullpath {
+function getxenfullpath () {
 	if [ "$1" = "/" ]
 	then
 		echo "/$2"
 	else
 		echo "$1/$2"
 	fi
+}
+
+function getusernewvalue () {
+	local initvalue="$3"
+	while true
+	do
+		dialog --ascii-lines --title "$1" --extra-button --extra-label "File Browser" --inputbox "$2" 0 0 "$initvalue" 2> "$tmpfile"
+		local exitstat=$?
+		case "$exitstat" in 
+			0|1)
+				return "$exitstat"
+				;;
+			3)
+				local initdir="/"
+				local tmpfile2="`mktemp`"
+				local selectedfile="/"
+				local nowvalue="`cat "$tmpfile"`"
+				local parentdir="`dirname "$nowvalue"`"
+				if [ "`echo "$nowvalue" | cut -c 1`" != "/" ] || [ '!' -e "$parentdir" ] 
+				then
+					dialog --ascii-lines --title "File Browser" --msgbox "$parentdir directory does not exits" 0 0
+					initdir="`pwd`/"
+				else
+					initdir="$nowvalue"
+				fi
+				dialog --ascii-lines --title "Use space-bar to copy the current selection" --fselect "$initdir" 13 75 2> "$tmpfile2"
+				if [ "$?" = "0" ]
+				then
+					selectedfile="`cat "$tmpfile2"`"
+					initvalue="$selectedfile"
+				else
+					initvalue="$nowvalue"
+				fi
+				rm -f "$tmpfile2"
+				;;
+		esac
+	done
 }
 
 while [ "$should_exit" = "0" ]
@@ -76,11 +113,19 @@ do
 	setdefault=0
 	case "$dialogexit" in
 		0)
+			unset valuepathvalid
 			descending="`getxenfullpath "$current" "$dialogout"`"
 			ascending="`dirname "$current"`"
-			if [ "$dialogout" = "(Empty)" ]
-			then
+			usevalue="`xenstore-read "$descending"`"
+			if [ "$usevalue" ]; then
+				xenstore-read "$usevalue" 2> /dev/null
+				[ "$?" = "0" ] && valuepathvalid=1
+			fi
+			if [ "$dialogout" = "(Empty)" ]; then
 				dialog --ascii-lines --title "$scriptshorttitle - Chdir" --menu "Choose from the list" 0 0 0 "Back" "Go to $ascending" "Manual" "Type a XenStore Path" 2> "$tmpfile"
+				dialogexit=$?
+			elif [ "$usevalue" ] &&  [ "$valuepathvalid" = "1" ]; then
+				dialog --ascii-lines --title "$scriptshorttitle - Chdir" --menu "Choose from the list" 0 0 0 "Enter" "Go to $descending" "Back" "Go to $ascending" "UseValue" "Go to $usevalue" "Manual" "Type a XenStore Path" 2> "$tmpfile"
 				dialogexit=$?
 			else
 				dialog --ascii-lines --title "$scriptshorttitle - Chdir" --menu "Choose from the list" 0 0 0 "Enter" "Go to $descending" "Back" "Go to $ascending" "Manual" "Type a XenStore Path" 2> "$tmpfile"
@@ -97,6 +142,10 @@ do
 					"Back")
 						prevdir="$current"
 						current="$ascending"
+						;;
+					"UseValue")
+						prevdir="$current"
+						current="$usevalue"
 						;;
 					"Manual")
 						dialog --ascii-lines --title "$scriptshorttitle - Chdir - Manual" --inputbox "XenStore Directory Name" 0 0 "$current" 2> "$tmpfile"
@@ -145,7 +194,7 @@ do
 							setdefaultvalue="$dialogout"
 							continue
 						fi
-						dialog --ascii-lines --title "$scriptshorttitle - Edit - Add" --inputbox "Value" 0 0 2> "$tmpfile"
+						getusernewvalue "$scriptshorttitle - Edit - Add" "Value" ""
 						if [ "$?" = "0" ]
 						then
 							newvalue="`cat "$tmpfile"`"
@@ -165,8 +214,8 @@ do
 						fi
 					;;
 					"Modify")
-						fullpath="`getxenfullpath "$current" "$dialogout"`"
-						dialog --ascii-lines --title "$scriptshorttitle - Edit - Modify" --inputbox "New value" 0 0 "`xenstore-read "$fullpath"`" 2> "$tmpfile"
+						fullpath="`getxenfullpath "$current" "$dialogout"`"						
+						getusernewvalue "$scriptshorttitle - Edit - Modify" "New value" "`xenstore-read "$fullpath"`"
 						if [ "$?" = "0" ]
 						then
 							dialogout3="`cat "$tmpfile"`"
@@ -209,4 +258,4 @@ do
 	esac
 done
 
-rm "$tmpfile"
+rm -f "$tmpfile"
