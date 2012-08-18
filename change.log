@@ -1,3 +1,7 @@
+* 2012-08-18 lantw44 <lantw44@www.tfcis.org> - 1.2
+- 可用 DIALOG 環境變數更改要使用的 dialog 指定與參數
+- 加入 XenStore Viewer，方便檢視 domain 資訊而不需要直接看 XenStore 的內容
+
 * 2012-06-11 lantw44 <lantw44@www.tfcis.org> - 1.1
 - 修改數值的畫面加入「檔案瀏覽器」功能
 - 如果項目的值是 XenStore 路徑，那麼在 Chdir 選單中會出現 UseValue 項目，允許使
