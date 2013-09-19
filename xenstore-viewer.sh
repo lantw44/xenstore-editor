@@ -152,7 +152,7 @@ else
 	done
 fi
 
-if [ -z "$xenstorepath" ] 
+if [ -z "$xenstorepath" ]
 then
 	echo "Domain $xendominput not found." && exit 42
 else

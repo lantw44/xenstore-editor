@@ -44,7 +44,7 @@ function getusernewvalue () {
 	do
 		$DIALOG --title "$1" --extra-button --extra-label "File Browser" --inputbox "$2" 0 0 "$initvalue" 2> "$tmpfile"
 		local exitstat=$?
-		case "$exitstat" in 
+		case "$exitstat" in
 			0|1)
 				return "$exitstat"
 				;;
@@ -54,7 +54,7 @@ function getusernewvalue () {
 				local selectedfile="/"
 				local nowvalue="`cat "$tmpfile"`"
 				local parentdir="`dirname "$nowvalue"`"
-				if [ "`echo "$nowvalue" | cut -c 1`" != "/" ] || [ '!' -e "$parentdir" ] 
+				if [ "`echo "$nowvalue" | cut -c 1`" != "/" ] || [ '!' -e "$parentdir" ]
 				then
 					$DIALOG --title "File Browser" --msgbox "$parentdir directory does not exits" 0 0
 					initdir="`pwd`/"
@@ -163,7 +163,7 @@ do
 						then
 							prevdir="$current"
 							current="`cat "$tmpfile"`"
-						else 
+						else
 							setdefault=1
 							setdefaultvalue="$dialogout"
 						fi
@@ -193,7 +193,7 @@ do
 			fi
 			if [ "$dialogexit" = "0" ]
 			then
-				case "$dialogout2" in 
+				case "$dialogout2" in
 					"Add")
 						$DIALOG --title "$scriptshorttitle - Edit - Add" --inputbox "Name" 0 0 2> "$tmpfile"
 						if [ "$?" = "0" ]
@@ -244,7 +244,7 @@ do
 					;;
 					"Remove")
 						fullpath="`getxenfullpath "$current" "$dialogout"`"
-						if $DIALOG --title "$scriptshorttitle - Edit - Remove" --yesno "Do you really want to delete the value $dialogout?" 0 0 
+						if $DIALOG --title "$scriptshorttitle - Edit - Remove" --yesno "Do you really want to delete the value $dialogout?" 0 0
 						then
 							outmsg="`xenstore-rm "$fullpath" 2>&1`"
 							if [ "$?" != "0" ]
