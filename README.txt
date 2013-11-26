@@ -1,10 +1,19 @@
- -- UTF-8 --
 
-這個小工具可以讓編輯 xenstore 內的值更方便
+Simple bash scripts to get and modify information in XenStore
 
-系統需求：
+Runtime requirement：
 
-	1. 請在 Xen Domain 0 執行，並確定 xenstored 已啟動
-	2. xenstore 相關管理工具
-	3. GNU bash
-	4. (c)dialog
+	1. GNU bash
+	2. cdialog (http://invisible-island.net/dialog/dialog.html)
+	3. xenstore-{list,read,write,rm} executables
+	4. If it is run in Xen Dom0, xenstored must be started.
+	5. If it is run in Xen DomU, some filesystem should be mounted for
+	   xenstore-* tools to work.
+
+Known problems:
+
+ 	1. This tool may crash FreeBSD paravirtualized domU.
+	2. xenstore-editor does not work with NetBSD mktemp.
+	3. xenstore-editor may file to start in Xen DomU when starting without
+	   arguments. Workaround: use this command to start xenstore-editor:
+	   xenstore-editor.sh /local/domain/`xenstore-read domid`
