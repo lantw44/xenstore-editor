@@ -121,6 +121,7 @@ function xenstoregetinfo () {
 			;;
 		*)
 			echo "不明的指令。請輸入 m 來查看說明。"
+			echo "若要離開，請送出 EOF，通常按下 Control-D 即可。"
 			;;
 	esac
 }

@@ -83,7 +83,7 @@ do
 	unset j
 	xenstore-list "$current" > "$tmpfile"
 	if [ "$?" != "0" ]; then
-		$DIALOG --title "$scripttitle" --msgbox "無法從 $current 取得檔案清班" 0 0
+		$DIALOG --title "$scripttitle" --msgbox "無法從 $current 取得檔案清單" 0 0
 		if [ "$first_run" != "0" ]
 		then
 			exit 1

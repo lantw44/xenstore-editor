@@ -121,6 +121,7 @@ function xenstoregetinfo () {
 			;;
 		*)
 			echo "Unrecognized command. Type m for help."
+			echo "Use EOF (typically Control-D) to quit this script."
 			;;
 	esac
 }
